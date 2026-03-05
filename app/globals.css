@@ -24,3 +24,12 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Monaco Editor line highlight decoration */
+.monaco-highlighted-line {
+  background: rgba(59, 130, 246, 0.12) !important;
+}
+.monaco-highlighted-gutter {
+  background: #3b82f6 !important;
+  width: 3px !important;
+}
