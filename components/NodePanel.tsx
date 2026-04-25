@@ -11,6 +11,7 @@ const KIND_LABELS: Record<NodeKind, string> = {
   return: "Return",
   import: "Import",
   variable: "Variable",
+  tryCatch: "Try / Catch",
 };
 
 const KIND_COLORS: Record<NodeKind, string> = {
@@ -22,6 +23,7 @@ const KIND_COLORS: Record<NodeKind, string> = {
   return: "bg-emerald-100 text-emerald-700",
   import: "bg-gray-100 text-gray-700",
   variable: "bg-gray-100 text-gray-600",
+  tryCatch: "bg-orange-100 text-orange-700",
 };
 
 interface NodePanelProps {

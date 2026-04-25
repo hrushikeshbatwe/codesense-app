@@ -9,6 +9,9 @@ import type {
   ArrowFunctionExpression,
   FunctionExpression,
   IfStatement,
+  SwitchStatement,
+  SwitchCase,
+  TryStatement,
   ForStatement,
   WhileStatement,
   DoWhileStatement,
@@ -22,6 +25,8 @@ import type {
   BlockStatement,
   Identifier,
   MemberExpression,
+  StringLiteral,
+  NumericLiteral,
 } from "@babel/types";
 import type { CodeNode, CodeEdge, FlowGraph, NodeKind } from "@/types/flow.types";
 
@@ -209,6 +214,14 @@ function processStatement(
       return processLoopStatement(state, stmt as ForStatement | WhileStatement | DoWhileStatement | ForInStatement | ForOfStatement, prevId);
     }
 
+    case "SwitchStatement": {
+      return processSwitchStatement(state, stmt as SwitchStatement, prevId);
+    }
+
+    case "TryStatement": {
+      return processTryStatement(state, stmt as TryStatement, prevId);
+    }
+
     case "ImportDeclaration": {
       return processImportDeclaration(state, stmt as ImportDeclaration, prevId);
     }
@@ -346,6 +359,41 @@ function processVariableDeclaration(
         lastId = callId;
         prevId = callId;
       }
+    } else if (init && init.type === "StringLiteral") {
+      const name = declarator.id.type === "Identifier" ? (declarator.id as Identifier).name : "var";
+      const val = (init as StringLiteral).value;
+      const id = makeId("variable", name, getLine(node));
+      addNode(state, {
+        id,
+        type: "variable",
+        position: { x: 0, y: 0 },
+        data: {
+          label: `${name} = "${val}"`,
+          kind: "variable",
+          lineStart: getLine(node),
+          lineEnd: getEndLine(node),
+        },
+      });
+      if (prevId) addEdge(state, prevId, id);
+      lastId = id;
+      prevId = id;
+    } else if (init && init.type === "TemplateLiteral") {
+      const name = declarator.id.type === "Identifier" ? (declarator.id as Identifier).name : "var";
+      const id = makeId("variable", name, getLine(node));
+      addNode(state, {
+        id,
+        type: "variable",
+        position: { x: 0, y: 0 },
+        data: {
+          label: `${name} = \`...\``,
+          kind: "variable",
+          lineStart: getLine(node),
+          lineEnd: getEndLine(node),
+        },
+      });
+      if (prevId) addEdge(state, prevId, id);
+      lastId = id;
+      prevId = id;
     }
   }
   return lastId;
@@ -392,6 +440,39 @@ function processCallExpression(
     return id;
   }
 
+  // Console output
+  if (
+    node.callee.type === "MemberExpression" &&
+    node.callee.object.type === "Identifier" &&
+    node.callee.object.name === "console"
+  ) {
+    let msg = "console.log()";
+    if (node.arguments.length > 0) {
+      const arg = node.arguments[0];
+      if (arg.type === "StringLiteral") {
+        msg = `print("${arg.value}")`;
+      } else if (arg.type === "Identifier") {
+        msg = `print(${arg.name})`;
+      } else {
+        msg = `print(...)`;
+      }
+    }
+    const id = makeId("output", "console", line);
+    addNode(state, {
+      id,
+      type: "output",
+      position: { x: 0, y: 0 },
+      data: {
+        label: msg,
+        kind: "output",
+        lineStart: line,
+        lineEnd: getEndLine(node),
+      },
+    });
+    if (prevId) addEdge(state, prevId, id);
+    return id;
+  }
+
   // Loop method (.map / .forEach etc.)
   const loopMethod = isLoopMethodCall(node);
   if (loopMethod) {
@@ -431,6 +512,11 @@ function processIfStatement(
   prevId: string | null
 ): string {
   const line = getLine(node);
+  const rawLine = state.sourceLines[line - 1] || "";
+  const match = rawLine.match(/^\s*\}?\s*else\s+if\s*\((.*?)\)\s*\{?|^\s*if\s*\((.*?)\)\s*\{?/);
+  const rawCond = match ? (match[1] || match[2] || "...") : "...";
+  const condLabel = rawCond;
+  
   const id = makeId("conditional", "if", line);
 
   addNode(state, {
@@ -438,7 +524,7 @@ function processIfStatement(
     type: "conditional",
     position: { x: 0, y: 0 },
     data: {
-      label: "if",
+      label: `if (${condLabel})`,
       kind: "conditional",
       lineStart: line,
       lineEnd: getEndLine(node),
@@ -476,12 +562,19 @@ function processLoopStatement(
   prevId: string | null
 ): string {
   const line = getLine(node);
-  const kindLabel =
+  let kindLabel =
     node.type === "ForStatement" ? "for"
     : node.type === "WhileStatement" ? "while"
     : node.type === "DoWhileStatement" ? "do…while"
     : node.type === "ForInStatement" ? "for…in"
     : "for…of";
+
+  const rawLine = state.sourceLines[line - 1] || "";
+  const match = rawLine.match(/^\s*(for|while)\s*\((.*?)\)\s*\{?/);
+  if (match) {
+    const cond = match[2].trim();
+    kindLabel = `${kindLabel} (${cond})`;
+  }
 
   const id = makeId("loop", kindLabel, line);
 
@@ -569,6 +662,129 @@ function processReturnStatement(
   });
 
   if (prevId) addEdge(state, prevId, id);
+  return id;
+}
+
+// ─── Expression label helper ──────────────────────────────────────────────────
+
+function getExprLabel(expr: Expression): string {
+  if (expr.type === "Identifier") return (expr as Identifier).name;
+  if (expr.type === "MemberExpression") {
+    const { object: obj, property: prop } = expr as MemberExpression;
+    const o = obj.type === "Identifier" ? (obj as Identifier).name : "?";
+    const p = prop.type === "Identifier" ? (prop as Identifier).name : "?";
+    return `${o}.${p}`;
+  }
+  return "expr";
+}
+
+function getCaseLabel(test: Expression | null): string {
+  if (!test) return "default";
+  if (test.type === "StringLiteral") return `"${(test as StringLiteral).value}"`;
+  if (test.type === "NumericLiteral") return String((test as NumericLiteral).value);
+  if (test.type === "Identifier") return (test as Identifier).name;
+  return "case";
+}
+
+// ─── Switch statement ─────────────────────────────────────────────────────────
+
+function processSwitchStatement(
+  state: TransformState,
+  node: SwitchStatement,
+  prevId: string | null
+): string {
+  const line = getLine(node);
+  const discriminant = getExprLabel(node.discriminant as Expression);
+  const id = makeId("conditional", `switch-${discriminant}`, line);
+
+  addNode(state, {
+    id,
+    type: "conditional",
+    position: { x: 0, y: 0 },
+    data: {
+      label: `switch (${discriminant})`,
+      kind: "conditional",
+      lineStart: line,
+      lineEnd: getEndLine(node),
+    },
+  });
+
+  if (prevId) addEdge(state, prevId, id);
+
+  for (const c of node.cases as SwitchCase[]) {
+    const caseLabel = getCaseLabel(c.test as Expression | null);
+    const stmts = c.consequent as Statement[];
+    // Strip trailing BreakStatement for cleaner graphs
+    const body = stmts.filter((s) => s.type !== "BreakStatement");
+    if (body.length > 0) {
+      const firstId = processStatements(state, body, null);
+      if (firstId) addEdge(state, id, firstId, caseLabel);
+    }
+  }
+
+  return id;
+}
+
+// ─── Try/catch statement ──────────────────────────────────────────────────────
+
+function processTryStatement(
+  state: TransformState,
+  node: TryStatement,
+  prevId: string | null
+): string {
+  const line = getLine(node);
+  const id = makeId("tryCatch", "try", line);
+
+  addNode(state, {
+    id,
+    type: "tryCatch",
+    position: { x: 0, y: 0 },
+    data: {
+      label: node.handler ? "try / catch" : "try / finally",
+      kind: "tryCatch",
+      lineStart: line,
+      lineEnd: getEndLine(node),
+    },
+  });
+
+  if (prevId) addEdge(state, prevId, id);
+
+  // try block
+  if (node.block.body.length > 0) {
+    const firstTry = processStatements(state, node.block.body as Statement[], null);
+    if (firstTry) addEdge(state, id, firstTry, "try");
+  }
+
+  // catch block
+  if (node.handler) {
+    const param = node.handler.param;
+    const catchLabel =
+      param && param.type === "Identifier"
+        ? `catch (${(param as Identifier).name})`
+        : "catch";
+    const firstCatch = processStatements(state, node.handler.body.body as Statement[], null);
+    if (firstCatch) addEdge(state, id, firstCatch, catchLabel);
+  }
+
+  // finally block — sequential node after try/catch
+  if (node.finalizer && node.finalizer.body.length > 0) {
+    const finallyLine = getLine(node.finalizer);
+    const finallyId = makeId("loop", "finally", finallyLine);
+    addNode(state, {
+      id: finallyId,
+      type: "loop",
+      position: { x: 0, y: 0 },
+      data: {
+        label: "finally",
+        kind: "loop",
+        lineStart: finallyLine,
+        lineEnd: getEndLine(node.finalizer),
+      },
+    });
+    addEdge(state, id, finallyId, "finally");
+    processStatements(state, node.finalizer.body as Statement[], finallyId);
+  }
+
   return id;
 }
 

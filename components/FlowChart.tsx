@@ -22,6 +22,8 @@ import { ApiCallNode } from "./nodes/ApiCallNode";
 import { LoopNode } from "./nodes/LoopNode";
 import { ReturnNode } from "./nodes/ReturnNode";
 import { ImportNode } from "./nodes/ImportNode";
+import { TryCatchNode } from "./nodes/TryCatchNode";
+import { OutputNode } from "./nodes/OutputNode";
 
 // Must be defined OUTSIDE the component to avoid React Flow re-registration
 const nodeTypes: NodeTypes = {
@@ -32,6 +34,8 @@ const nodeTypes: NodeTypes = {
   loop: LoopNode as never,
   return: ReturnNode as never,
   import: ImportNode as never,
+  tryCatch: TryCatchNode as never,
+  output: OutputNode as never,
 };
 
 const NODE_COLOR: Record<NodeKind, string> = {
@@ -43,6 +47,8 @@ const NODE_COLOR: Record<NodeKind, string> = {
   return: "#6ee7b7",
   import: "#d1d5db",
   variable: "#e5e7eb",
+  tryCatch: "#fdba74",
+  output: "#fdba74",
 };
 
 interface FlowChartProps {

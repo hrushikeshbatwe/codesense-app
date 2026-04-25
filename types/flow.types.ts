@@ -8,7 +8,9 @@ export type NodeKind =
   | "apiCall"
   | "return"
   | "import"
-  | "variable";
+  | "variable"
+  | "tryCatch"
+  | "output";
 
 export interface CodeNodeData extends Record<string, unknown> {
   label: string;

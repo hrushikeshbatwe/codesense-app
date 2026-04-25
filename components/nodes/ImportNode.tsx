@@ -1,9 +1,10 @@
 "use client";
 
+import { memo } from "react";
 import { Handle, Position, type NodeProps } from "@xyflow/react";
 import type { CodeNode } from "@/types/flow.types";
 
-export function ImportNode({ data, selected }: NodeProps<CodeNode>) {
+export const ImportNode = memo(function ImportNode({ data, selected }: NodeProps<CodeNode>) {
   return (
     <div
       className={`px-4 py-2 rounded-lg border-2 bg-gray-50 min-w-[160px] max-w-[220px] shadow-sm cursor-pointer transition-shadow ${
@@ -18,4 +19,4 @@ export function ImportNode({ data, selected }: NodeProps<CodeNode>) {
       <Handle type="source" position={Position.Bottom} className="!bg-gray-400" />
     </div>
   );
-}
+});

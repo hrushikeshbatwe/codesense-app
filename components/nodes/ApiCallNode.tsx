@@ -1,9 +1,10 @@
 "use client";
 
+import { memo } from "react";
 import { Handle, Position, type NodeProps } from "@xyflow/react";
 import type { CodeNode } from "@/types/flow.types";
 
-export function ApiCallNode({ data, selected }: NodeProps<CodeNode>) {
+export const ApiCallNode = memo(function ApiCallNode({ data, selected }: NodeProps<CodeNode>) {
   return (
     <div
       className={`px-4 py-2 rounded-lg border-2 bg-red-50 min-w-[160px] max-w-[220px] shadow-sm cursor-pointer transition-shadow ${
@@ -19,4 +20,4 @@ export function ApiCallNode({ data, selected }: NodeProps<CodeNode>) {
       <Handle type="source" position={Position.Bottom} className="!bg-red-400" />
     </div>
   );
-}
+});

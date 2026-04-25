@@ -8,15 +8,17 @@ export interface CodeEditorHandle {
   jumpToLine: (lineNumber: number) => void;
   highlightRange: (startLine: number, endLine: number) => void;
   getValue: () => string;
+  setValue: (value: string) => void;
 }
 
 interface CodeEditorProps {
   defaultValue?: string;
+  language?: string;
   onChange?: OnChange;
 }
 
 export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(
-  function CodeEditor({ defaultValue, onChange }, ref) {
+  function CodeEditor({ defaultValue, language = "typescript", onChange }, ref) {
     const editorRef = useRef<MonacoEditor.editor.IStandaloneCodeEditor | null>(null);
     const monacoRef = useRef<Monaco | null>(null);
     const decorationsRef = useRef<MonacoEditor.editor.IEditorDecorationsCollection | null>(null);
@@ -56,12 +58,20 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(
       getValue() {
         return editorRef.current?.getValue() ?? "";
       },
+
+      setValue(value: string) {
+        try {
+          editorRef.current?.getModel()?.setValue(value);
+        } catch {
+          // Editor not yet ready or disposed during remount
+        }
+      },
     }));
 
     return (
       <div className="h-full w-full">
         <Editor
-          defaultLanguage="typescript"
+          language={language}
           defaultValue={defaultValue}
           onMount={handleMount}
           onChange={onChange}
