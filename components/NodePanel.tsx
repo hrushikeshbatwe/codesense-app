@@ -12,6 +12,7 @@ const KIND_LABELS: Record<NodeKind, string> = {
   import: "Import",
   variable: "Variable",
   tryCatch: "Try / Catch",
+  output: "Output",
 };
 
 const KIND_COLORS: Record<NodeKind, string> = {
@@ -20,10 +21,11 @@ const KIND_COLORS: Record<NodeKind, string> = {
   conditional: "bg-yellow-100 text-yellow-700",
   loop: "bg-green-100 text-green-700",
   apiCall: "bg-red-100 text-red-700",
-  return: "bg-emerald-100 text-emerald-700",
-  import: "bg-gray-100 text-gray-700",
-  variable: "bg-gray-100 text-gray-600",
-  tryCatch: "bg-orange-100 text-orange-700",
+  return: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+  import: "text-gray-400 bg-gray-500/10 border-gray-500/20",
+  variable: "text-gray-400 bg-gray-500/10 border-gray-500/20",
+  tryCatch: "text-orange-400 bg-orange-500/10 border-orange-500/20",
+  output: "text-orange-400 bg-orange-500/10 border-orange-500/20",
 };
 
 interface NodePanelProps {
