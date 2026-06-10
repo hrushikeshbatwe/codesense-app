@@ -1,0 +1,396 @@
+﻿diff --git a/components/FileUpload.tsx b/components/FileUpload.tsx
+index 7b10118..aac85fe 100644
+--- a/components/FileUpload.tsx
++++ b/components/FileUpload.tsx
+@@ -44,9 +44,12 @@ export function FileUpload({ onLoad, onError }: FileUploadProps) {
+       />
+       <button
+         onClick={() => inputRef.current?.click()}
+-        className="text-xs px-2.5 py-1.5 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors"
++        className="group flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-white/10 hover:border-white/20 transition-all duration-200"
+       >
+-        ↑ Upload
++        <svg className="w-3.5 h-3.5 group-hover:-translate-y-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
++          <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
++        </svg>
++        Upload
+       </button>
+     </>
+   );
+diff --git a/components/FlowChart.tsx b/components/FlowChart.tsx
+index e12b966..d9a56f7 100644
+--- a/components/FlowChart.tsx
++++ b/components/FlowChart.tsx
+@@ -108,11 +108,12 @@ function FlowChartInner({
+       minZoom={0.1}
+       maxZoom={2}
+     >
+-      <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="#e5e7eb" />
+-      <Controls />
++      <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#1e293b" />
++      <Controls className="[&>button]:bg-slate-800 [&>button]:border-white/10 [&>button]:text-slate-300 [&>button:hover]:bg-slate-700" />
+       <MiniMap
+-        nodeColor={(node) => NODE_COLOR[(node as CodeNode).data?.kind as NodeKind] ?? "#e5e7eb"}
+-        maskColor="rgba(255,255,255,0.7)"
++        nodeColor={(node) => NODE_COLOR[(node as CodeNode).data?.kind as NodeKind] ?? "#475569"}
++        maskColor="rgba(2,6,23,0.7)"
++        style={{ background: "#0f172a", border: "1px solid rgba(255,255,255,0.06)" }}
+       />
+     </ReactFlow>
+   );
+diff --git a/components/NodePanel.tsx b/components/NodePanel.tsx
+index 29d0309..90bb3f6 100644
+--- a/components/NodePanel.tsx
++++ b/components/NodePanel.tsx
+@@ -16,14 +16,14 @@ const KIND_LABELS: Record<NodeKind, string> = {
+ };
+ 
+ const KIND_COLORS: Record<NodeKind, string> = {
+-  function: "bg-blue-100 text-blue-700",
+-  component: "bg-blue-100 text-blue-700",
+-  conditional: "bg-yellow-100 text-yellow-700",
+-  loop: "bg-green-100 text-green-700",
+-  apiCall: "bg-red-100 text-red-700",
++  function: "text-blue-400 bg-blue-500/10 border-blue-500/20",
++  component: "text-blue-400 bg-blue-500/10 border-blue-500/20",
++  conditional: "text-yellow-400 bg-yellow-500/10 border-yellow-500/20",
++  loop: "text-green-400 bg-green-500/10 border-green-500/20",
++  apiCall: "text-red-400 bg-red-500/10 border-red-500/20",
+   return: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+-  import: "text-gray-400 bg-gray-500/10 border-gray-500/20",
+-  variable: "text-gray-400 bg-gray-500/10 border-gray-500/20",
++  import: "text-slate-400 bg-slate-500/10 border-slate-500/20",
++  variable: "text-slate-400 bg-slate-500/10 border-slate-500/20",
+   tryCatch: "text-orange-400 bg-orange-500/10 border-orange-500/20",
+   output: "text-orange-400 bg-orange-500/10 border-orange-500/20",
+ };
+@@ -42,24 +42,26 @@ export function NodePanel({ node, onJumpToLine, onClose }: NodePanelProps) {
+   const kindColor = KIND_COLORS[kind] ?? "bg-gray-100 text-gray-700";
+ 
+   return (
+-    <div className="border-t border-gray-200 bg-white shadow-md px-4 py-3 flex items-start gap-4 animate-in slide-in-from-bottom-2 duration-200">
++    <div className="relative z-10 border-t border-white/5 bg-slate-900/90 backdrop-blur-xl shadow-2xl px-5 py-3 flex items-center gap-4 animate-in slide-in-from-bottom-2 duration-200">
++      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent" />
++
+       {/* Kind badge */}
+-      <span className={`shrink-0 text-xs font-semibold px-2 py-1 rounded-full ${kindColor}`}>
++      <span className={`shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full border ${kindColor}`}>
+         {kindLabel}
+       </span>
+ 
+       {/* Details */}
+       <div className="flex-1 min-w-0">
+-        <div className="font-semibold text-sm text-gray-900 truncate">
+-          {isAsync && <span className="text-gray-400 font-mono text-xs mr-1">async</span>}
++        <div className="font-semibold text-sm text-slate-100 truncate">
++          {isAsync && <span className="text-indigo-400 font-mono text-xs mr-1.5">async</span>}
+           {name ?? label}
+         </div>
+         {params && params.length > 0 && (
+-          <div className="text-xs text-gray-500 font-mono mt-0.5">
++          <div className="text-xs text-slate-400 font-mono mt-0.5">
+             ({params.join(", ")})
+           </div>
+         )}
+-        <div className="text-xs text-gray-400 mt-0.5">
++        <div className="text-xs text-slate-500 mt-0.5">
+           Line {lineStart}{lineEnd !== lineStart ? `–${lineEnd}` : ""}
+         </div>
+       </div>
+@@ -68,16 +70,18 @@ export function NodePanel({ node, onJumpToLine, onClose }: NodePanelProps) {
+       <div className="flex items-center gap-2 shrink-0">
+         <button
+           onClick={() => onJumpToLine(lineStart)}
+-          className="text-xs px-3 py-1.5 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors font-medium"
++          className="text-xs px-3 py-1.5 rounded-lg bg-indigo-500/10 text-indigo-300 hover:bg-indigo-500 hover:text-white border border-indigo-500/20 hover:border-indigo-500/50 transition-all duration-200 font-medium"
+         >
+           Jump to line
+         </button>
+         <button
+           onClick={onClose}
+-          className="text-gray-400 hover:text-gray-600 transition-colors text-lg leading-none"
++          className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-200 hover:bg-slate-800 transition-all duration-200"
+           aria-label="Close panel"
+         >
+-          ×
++          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
++            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
++          </svg>
+         </button>
+       </div>
+     </div>
+diff --git a/components/nodes/ApiCallNode.tsx b/components/nodes/ApiCallNode.tsx
+index 3f324dd..f4fcf71 100644
+--- a/components/nodes/ApiCallNode.tsx
++++ b/components/nodes/ApiCallNode.tsx
+@@ -7,17 +7,18 @@ import type { CodeNode } from "@/types/flow.types";
+ export const ApiCallNode = memo(function ApiCallNode({ data, selected }: NodeProps<CodeNode>) {
+   return (
+     <div
+-      className={`px-4 py-2 rounded-lg border-2 bg-red-50 min-w-[160px] max-w-[220px] shadow-sm cursor-pointer transition-shadow ${
+-        selected ? "border-red-600 shadow-red-300 shadow-md" : "border-red-400"
++      className={`relative px-4 py-2.5 rounded-xl border bg-slate-900 min-w-[160px] max-w-[220px] cursor-pointer transition-all duration-200 ${
++        selected
++          ? "border-red-500 shadow-[0_0_16px_rgba(239,68,68,0.3)]"
++          : "border-red-500/30 shadow-lg shadow-black/40 hover:border-red-500/60"
+       }`}
+     >
+-      <Handle type="target" position={Position.Top} className="!bg-red-400" />
++      <Handle type="target" position={Position.Top} className="!bg-red-500 !border-red-400" />
+       <div className="flex items-center gap-2">
+-        <span className="text-red-500 text-base shrink-0">🟥</span>
+-        <span className="font-semibold text-sm text-gray-800 truncate">{data.label}</span>
++        <span className="text-red-400 font-mono text-xs shrink-0 bg-red-500/10 px-1.5 py-0.5 rounded">API</span>
++        <span className="font-semibold text-sm text-slate-100 truncate">{data.label}</span>
+       </div>
+-      <div className="text-xs text-red-400 mt-0.5 font-mono">API call</div>
+-      <Handle type="source" position={Position.Bottom} className="!bg-red-400" />
++      <Handle type="source" position={Position.Bottom} className="!bg-red-500 !border-red-400" />
+     </div>
+   );
+ });
+diff --git a/components/nodes/ConditionalNode.tsx b/components/nodes/ConditionalNode.tsx
+index 3c387f0..576e5fd 100644
+--- a/components/nodes/ConditionalNode.tsx
++++ b/components/nodes/ConditionalNode.tsx
+@@ -10,25 +10,27 @@ export const ConditionalNode = memo(function ConditionalNode({ data, selected }:
+ 
+   return (
+     <div
+-      className={`relative px-4 py-2 rounded-lg border-2 bg-yellow-50 min-w-[160px] max-w-[320px] shadow-sm cursor-pointer transition-shadow ${
+-        selected ? "border-yellow-600 shadow-yellow-300 shadow-md" : "border-yellow-400"
++      className={`relative px-4 py-2.5 rounded-xl border bg-slate-900 min-w-[160px] max-w-[320px] cursor-pointer transition-all duration-200 ${
++        selected
++          ? "border-yellow-500 shadow-[0_0_16px_rgba(234,179,8,0.3)]"
++          : "border-yellow-500/30 shadow-lg shadow-black/40 hover:border-yellow-500/60"
+       }`}
+     >
+-      <div className="absolute -top-2.5 -right-2.5 bg-yellow-100 text-yellow-700 text-[10px] font-bold px-1.5 py-0.5 rounded-md shadow-sm border border-yellow-300">
++      <div className="absolute -top-2 -right-2 bg-slate-800 text-yellow-400 text-[9px] font-bold px-1.5 py-0.5 rounded-md border border-yellow-500/30">
+         L{data.lineStart}
+       </div>
+-      <Handle type="target" position={Position.Top} className="!bg-yellow-400" />
++      <Handle type="target" position={Position.Top} className="!bg-yellow-500 !border-yellow-400" />
+       <div className="flex items-center gap-2">
+-        <span className="text-yellow-600 font-mono text-xs shrink-0">{keyword}</span>
+-        <span className="font-semibold text-sm text-gray-800 break-all">{data.label}</span>
++        <span className="text-yellow-400 font-mono text-xs shrink-0 bg-yellow-500/10 px-1.5 py-0.5 rounded">{keyword}</span>
++        <span className="font-semibold text-sm text-slate-100 break-all">{data.label}</span>
+       </div>
+       {!isSwitch && (
+-        <div className="flex justify-between mt-1 text-xs text-gray-400 font-mono">
+-          <span>true ↙</span>
+-          <span>↘ false</span>
++        <div className="flex justify-between mt-1 text-xs text-slate-500 font-mono">
++          <span className="text-green-400/70">↙ true</span>
++          <span className="text-red-400/70">false ↘</span>
+         </div>
+       )}
+-      <Handle type="source" position={Position.Bottom} className="!bg-yellow-400" />
++      <Handle type="source" position={Position.Bottom} className="!bg-yellow-500 !border-yellow-400" />
+     </div>
+   );
+ });
+diff --git a/components/nodes/FunctionNode.tsx b/components/nodes/FunctionNode.tsx
+index 730b5e4..0a5f9b5 100644
+--- a/components/nodes/FunctionNode.tsx
++++ b/components/nodes/FunctionNode.tsx
+@@ -8,26 +8,28 @@ export const FunctionNode = memo(function FunctionNode({ data, selected }: NodeP
+   const isComponent = data.kind === "component";
+   return (
+     <div
+-      className={`relative px-4 py-2 rounded-lg border-2 bg-blue-50 min-w-[180px] max-w-[320px] shadow-sm cursor-pointer transition-shadow ${
+-        selected ? "border-blue-600 shadow-blue-300 shadow-md" : "border-blue-400"
++      className={`relative px-4 py-2.5 rounded-xl border bg-slate-900 min-w-[180px] max-w-[320px] cursor-pointer transition-all duration-200 ${
++        selected
++          ? "border-blue-500 shadow-[0_0_16px_rgba(59,130,246,0.35)]"
++          : "border-blue-500/30 shadow-lg shadow-black/40 hover:border-blue-500/60"
+       }`}
+     >
+-      <div className="absolute -top-2.5 -right-2.5 bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded-md shadow-sm border border-blue-300">
++      <div className="absolute -top-2 -right-2 bg-slate-800 text-blue-400 text-[9px] font-bold px-1.5 py-0.5 rounded-md border border-blue-500/30">
+         L{data.lineStart}
+       </div>
+-      <Handle type="target" position={Position.Top} className="!bg-blue-400" />
++      <Handle type="target" position={Position.Top} className="!bg-blue-500 !border-blue-400" />
+       <div className="flex items-center gap-2">
+-        <span className="text-blue-600 font-mono text-xs shrink-0">
++        <span className="text-blue-400 font-mono text-xs shrink-0 bg-blue-500/10 px-1.5 py-0.5 rounded">
+           {isComponent ? "⚛" : data.isAsync ? "async fn" : "fn"}
+         </span>
+-        <span className="font-semibold text-sm text-gray-800 break-all">{data.label}</span>
++        <span className="font-semibold text-sm text-slate-100 break-all">{data.label}</span>
+       </div>
+       {data.params && data.params.length > 0 && (
+-        <div className="text-xs text-gray-500 mt-0.5 font-mono break-all">
++        <div className="text-xs text-slate-400 mt-1 font-mono break-all">
+           ({data.params.join(", ")})
+         </div>
+       )}
+-      <Handle type="source" position={Position.Bottom} className="!bg-blue-400" />
++      <Handle type="source" position={Position.Bottom} className="!bg-blue-500 !border-blue-400" />
+     </div>
+   );
+ });
+diff --git a/components/nodes/ImportNode.tsx b/components/nodes/ImportNode.tsx
+index c5bc976..5fa9824 100644
+--- a/components/nodes/ImportNode.tsx
++++ b/components/nodes/ImportNode.tsx
+@@ -7,16 +7,18 @@ import type { CodeNode } from "@/types/flow.types";
+ export const ImportNode = memo(function ImportNode({ data, selected }: NodeProps<CodeNode>) {
+   return (
+     <div
+-      className={`px-4 py-2 rounded-lg border-2 bg-gray-50 min-w-[160px] max-w-[220px] shadow-sm cursor-pointer transition-shadow ${
+-        selected ? "border-gray-500 shadow-gray-300 shadow-md" : "border-gray-300"
++      className={`relative px-4 py-2.5 rounded-xl border bg-slate-900 min-w-[160px] max-w-[220px] cursor-pointer transition-all duration-200 ${
++        selected
++          ? "border-slate-400 shadow-[0_0_16px_rgba(148,163,184,0.2)]"
++          : "border-slate-600/40 shadow-lg shadow-black/40 hover:border-slate-500/60"
+       }`}
+     >
+-      <Handle type="target" position={Position.Top} className="!bg-gray-400" />
++      <Handle type="target" position={Position.Top} className="!bg-slate-500 !border-slate-400" />
+       <div className="flex items-center gap-2">
+-        <span className="text-gray-400 font-mono text-xs shrink-0">⬜</span>
+-        <span className="font-semibold text-xs text-gray-600 truncate">{data.label}</span>
++        <span className="text-slate-400 font-mono text-xs shrink-0 bg-slate-700/50 px-1.5 py-0.5 rounded">import</span>
++        <span className="font-semibold text-xs text-slate-300 truncate">{data.label}</span>
+       </div>
+-      <Handle type="source" position={Position.Bottom} className="!bg-gray-400" />
++      <Handle type="source" position={Position.Bottom} className="!bg-slate-500 !border-slate-400" />
+     </div>
+   );
+ });
+diff --git a/components/nodes/LoopNode.tsx b/components/nodes/LoopNode.tsx
+index 9406946..14e1dc9 100644
+--- a/components/nodes/LoopNode.tsx
++++ b/components/nodes/LoopNode.tsx
+@@ -7,20 +7,21 @@ import type { CodeNode } from "@/types/flow.types";
+ export const LoopNode = memo(function LoopNode({ data, selected }: NodeProps<CodeNode>) {
+   return (
+     <div
+-      className={`relative px-4 py-2 rounded-lg border-2 bg-green-50 min-w-[160px] max-w-[320px] shadow-sm cursor-pointer transition-shadow ${
+-        selected ? "border-green-600 shadow-green-300 shadow-md" : "border-green-400"
++      className={`relative px-4 py-2.5 rounded-xl border bg-slate-900 min-w-[160px] max-w-[320px] cursor-pointer transition-all duration-200 ${
++        selected
++          ? "border-green-500 shadow-[0_0_16px_rgba(34,197,94,0.3)]"
++          : "border-green-500/30 shadow-lg shadow-black/40 hover:border-green-500/60"
+       }`}
+     >
+-      <div className="absolute -top-2.5 -right-2.5 bg-green-100 text-green-700 text-[10px] font-bold px-1.5 py-0.5 rounded-md shadow-sm border border-green-300">
++      <div className="absolute -top-2 -right-2 bg-slate-800 text-green-400 text-[9px] font-bold px-1.5 py-0.5 rounded-md border border-green-500/30">
+         L{data.lineStart}
+       </div>
+-      <Handle type="target" position={Position.Top} className="!bg-green-400" />
++      <Handle type="target" position={Position.Top} className="!bg-green-500 !border-green-400" />
+       <div className="flex items-center gap-2">
+-        <span className="text-green-600 text-base shrink-0">🔁</span>
+-        <span className="font-semibold text-sm text-gray-800 break-all">{data.label}</span>
++        <span className="text-green-400 font-mono text-xs shrink-0 bg-green-500/10 px-1.5 py-0.5 rounded">loop</span>
++        <span className="font-semibold text-sm text-slate-100 break-all">{data.label}</span>
+       </div>
+-      <div className="text-xs text-green-500 mt-0.5 font-mono">loop</div>
+-      <Handle type="source" position={Position.Bottom} className="!bg-green-400" />
++      <Handle type="source" position={Position.Bottom} className="!bg-green-500 !border-green-400" />
+     </div>
+   );
+ });
+diff --git a/components/nodes/OutputNode.tsx b/components/nodes/OutputNode.tsx
+index 1ad9b1a..e9772d9 100644
+--- a/components/nodes/OutputNode.tsx
++++ b/components/nodes/OutputNode.tsx
+@@ -7,20 +7,21 @@ import type { CodeNode } from "@/types/flow.types";
+ export const OutputNode = memo(function OutputNode({ data, selected }: NodeProps<CodeNode>) {
+   return (
+     <div
+-      className={`relative px-4 py-2 rounded-lg border-2 bg-orange-50 min-w-[160px] max-w-[320px] shadow-sm cursor-pointer transition-shadow ${
+-        selected ? "border-orange-500 shadow-orange-300 shadow-md" : "border-orange-300"
++      className={`relative px-4 py-2.5 rounded-xl border bg-slate-900 min-w-[160px] max-w-[320px] cursor-pointer transition-all duration-200 ${
++        selected
++          ? "border-amber-500 shadow-[0_0_16px_rgba(245,158,11,0.3)]"
++          : "border-amber-500/30 shadow-lg shadow-black/40 hover:border-amber-500/60"
+       }`}
+     >
+-      <div className="absolute -top-2.5 -right-2.5 bg-orange-100 text-orange-700 text-[10px] font-bold px-1.5 py-0.5 rounded-md shadow-sm border border-orange-300">
++      <div className="absolute -top-2 -right-2 bg-slate-800 text-amber-400 text-[9px] font-bold px-1.5 py-0.5 rounded-md border border-amber-500/30">
+         L{data.lineStart}
+       </div>
+-      <Handle type="target" position={Position.Top} className="!bg-orange-400" />
++      <Handle type="target" position={Position.Top} className="!bg-amber-500 !border-amber-400" />
+       <div className="flex items-center gap-2">
+-        <span className="text-orange-500 text-base shrink-0">🖨️</span>
+-        <span className="font-semibold text-sm text-gray-800 break-all">{data.label}</span>
++        <span className="text-amber-400 font-mono text-xs shrink-0 bg-amber-500/10 px-1.5 py-0.5 rounded">log</span>
++        <span className="font-semibold text-sm text-slate-100 break-all">{data.label}</span>
+       </div>
+-      <div className="text-xs text-orange-400 mt-0.5 font-mono">Output</div>
+-      <Handle type="source" position={Position.Bottom} className="!bg-orange-400" />
++      <Handle type="source" position={Position.Bottom} className="!bg-amber-500 !border-amber-400" />
+     </div>
+   );
+ });
+diff --git a/components/nodes/ReturnNode.tsx b/components/nodes/ReturnNode.tsx
+index 48cb692..a21f556 100644
+--- a/components/nodes/ReturnNode.tsx
++++ b/components/nodes/ReturnNode.tsx
+@@ -7,16 +7,18 @@ import type { CodeNode } from "@/types/flow.types";
+ export const ReturnNode = memo(function ReturnNode({ data, selected }: NodeProps<CodeNode>) {
+   return (
+     <div
+-      className={`px-4 py-2 rounded-lg border-2 bg-emerald-50 min-w-[140px] max-w-[220px] shadow-sm cursor-pointer transition-shadow ${
+-        selected ? "border-emerald-600 shadow-emerald-300 shadow-md" : "border-emerald-400"
++      className={`relative px-4 py-2.5 rounded-xl border bg-slate-900 min-w-[140px] max-w-[220px] cursor-pointer transition-all duration-200 ${
++        selected
++          ? "border-emerald-500 shadow-[0_0_16px_rgba(16,185,129,0.3)]"
++          : "border-emerald-500/30 shadow-lg shadow-black/40 hover:border-emerald-500/60"
+       }`}
+     >
+-      <Handle type="target" position={Position.Top} className="!bg-emerald-400" />
++      <Handle type="target" position={Position.Top} className="!bg-emerald-500 !border-emerald-400" />
+       <div className="flex items-center gap-2">
+-        <span className="text-emerald-600 font-mono text-xs shrink-0">↩</span>
+-        <span className="font-semibold text-sm text-gray-800 truncate">{data.label}</span>
++        <span className="text-emerald-400 font-mono text-xs shrink-0 bg-emerald-500/10 px-1.5 py-0.5 rounded">↩ return</span>
++        <span className="font-semibold text-sm text-slate-100 truncate">{data.label}</span>
+       </div>
+-      <Handle type="source" position={Position.Bottom} className="!bg-emerald-400" />
++      <Handle type="source" position={Position.Bottom} className="!bg-emerald-500 !border-emerald-400" />
+     </div>
+   );
+ });
+diff --git a/components/nodes/TryCatchNode.tsx b/components/nodes/TryCatchNode.tsx
+index 5966b49..35a070d 100644
+--- a/components/nodes/TryCatchNode.tsx
++++ b/components/nodes/TryCatchNode.tsx
+@@ -7,20 +7,22 @@ import type { CodeNode } from "@/types/flow.types";
+ export const TryCatchNode = memo(function TryCatchNode({ data, selected }: NodeProps<CodeNode>) {
+   return (
+     <div
+-      className={`px-4 py-2 rounded-lg border-2 bg-orange-50 min-w-[160px] max-w-[220px] shadow-sm cursor-pointer transition-shadow ${
+-        selected ? "border-orange-600 shadow-orange-300 shadow-md" : "border-orange-400"
++      className={`relative px-4 py-2.5 rounded-xl border bg-slate-900 min-w-[160px] max-w-[220px] cursor-pointer transition-all duration-200 ${
++        selected
++          ? "border-orange-500 shadow-[0_0_16px_rgba(249,115,22,0.3)]"
++          : "border-orange-500/30 shadow-lg shadow-black/40 hover:border-orange-500/60"
+       }`}
+     >
+-      <Handle type="target" position={Position.Top} className="!bg-orange-400" />
++      <Handle type="target" position={Position.Top} className="!bg-orange-500 !border-orange-400" />
+       <div className="flex items-center gap-2">
+-        <span className="text-orange-600 font-mono text-xs shrink-0">try</span>
+-        <span className="font-semibold text-sm text-gray-800 truncate">{data.label}</span>
++        <span className="text-orange-400 font-mono text-xs shrink-0 bg-orange-500/10 px-1.5 py-0.5 rounded">try</span>
++        <span className="font-semibold text-sm text-slate-100 truncate">{data.label}</span>
+       </div>
+-      <div className="flex justify-between mt-1 text-xs text-gray-400 font-mono">
+-        <span>try ↙</span>
+-        <span>↘ catch</span>
++      <div className="flex justify-between mt-1 text-xs text-slate-500 font-mono">
++        <span className="text-green-400/70">↙ try</span>
++        <span className="text-orange-400/70">catch ↘</span>
+       </div>
+-      <Handle type="source" position={Position.Bottom} className="!bg-orange-400" />
++      <Handle type="source" position={Position.Bottom} className="!bg-orange-500 !border-orange-400" />
+     </div>
+   );
+ });
