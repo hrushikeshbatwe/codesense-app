@@ -7,16 +7,24 @@ import type { CodeNode } from "@/types/flow.types";
 export const ImportNode = memo(function ImportNode({ data, selected }: NodeProps<CodeNode>) {
   return (
     <div
-      className={`px-4 py-2 rounded-lg border-2 bg-gray-50 min-w-[160px] max-w-[220px] shadow-sm cursor-pointer transition-shadow ${
-        selected ? "border-gray-500 shadow-gray-300 shadow-md" : "border-gray-300"
-      }`}
+      style={{
+        background: selected ? "rgba(100,116,139,0.15)" : "rgba(100,116,139,0.07)",
+        border: `1px solid ${selected ? "rgba(100,116,139,0.5)" : "rgba(100,116,139,0.25)"}`,
+        borderRadius: "8px",
+        padding: "6px 12px",
+        minWidth: "150px",
+        maxWidth: "220px",
+        cursor: "pointer",
+      }}
     >
-      <Handle type="target" position={Position.Top} className="!bg-gray-400" />
-      <div className="flex items-center gap-2">
-        <span className="text-gray-400 font-mono text-xs shrink-0">⬜</span>
-        <span className="font-semibold text-xs text-gray-600 truncate">{data.label}</span>
+      <Handle type="target" position={Position.Top} style={{ background: "#64748b", border: "none" }} />
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <span style={{ color: "#64748b", fontFamily: "var(--font-mono)", fontSize: "11px", flexShrink: 0 }}>imp</span>
+        <span style={{ fontWeight: 500, fontSize: "12px", color: "#94a3b8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {data.label}
+        </span>
       </div>
-      <Handle type="source" position={Position.Bottom} className="!bg-gray-400" />
+      <Handle type="source" position={Position.Bottom} style={{ background: "#64748b", border: "none" }} />
     </div>
   );
 });

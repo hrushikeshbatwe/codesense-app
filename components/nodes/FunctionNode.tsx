@@ -8,26 +8,43 @@ export const FunctionNode = memo(function FunctionNode({ data, selected }: NodeP
   const isComponent = data.kind === "component";
   return (
     <div
-      className={`relative px-4 py-2 rounded-lg border-2 bg-blue-50 min-w-[180px] max-w-[320px] shadow-sm cursor-pointer transition-shadow ${
-        selected ? "border-blue-600 shadow-blue-300 shadow-md" : "border-blue-400"
-      }`}
+      style={{
+        background: selected ? "rgba(59,130,246,0.15)" : "rgba(59,130,246,0.07)",
+        border: `1px solid ${selected ? "rgba(59,130,246,0.6)" : "rgba(59,130,246,0.3)"}`,
+        borderRadius: "8px",
+        padding: "8px 12px",
+        minWidth: "160px",
+        maxWidth: "300px",
+        cursor: "pointer",
+        position: "relative",
+      }}
     >
-      <div className="absolute -top-2.5 -right-2.5 bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded-md shadow-sm border border-blue-300">
+      <div
+        style={{
+          position: "absolute", top: "-9px", right: "-6px",
+          background: "#1e3a5f", color: "#60a5fa",
+          fontSize: "9px", fontWeight: 700, fontFamily: "var(--font-mono)",
+          padding: "1px 5px", borderRadius: "4px",
+          border: "1px solid rgba(59,130,246,0.3)",
+        }}
+      >
         L{data.lineStart}
       </div>
-      <Handle type="target" position={Position.Top} className="!bg-blue-400" />
-      <div className="flex items-center gap-2">
-        <span className="text-blue-600 font-mono text-xs shrink-0">
+      <Handle type="target" position={Position.Top} style={{ background: "#3b82f6", border: "none" }} />
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <span style={{ color: "#60a5fa", fontFamily: "var(--font-mono)", fontSize: "11px", flexShrink: 0 }}>
           {isComponent ? "⚛" : data.isAsync ? "async fn" : "fn"}
         </span>
-        <span className="font-semibold text-sm text-gray-800 break-all">{data.label}</span>
+        <span style={{ fontWeight: 600, fontSize: "13px", color: "#e2e8f0", wordBreak: "break-all" }}>
+          {data.label}
+        </span>
       </div>
       {data.params && data.params.length > 0 && (
-        <div className="text-xs text-gray-500 mt-0.5 font-mono break-all">
+        <div style={{ fontSize: "11px", color: "#64748b", marginTop: "2px", fontFamily: "var(--font-mono)", wordBreak: "break-all" }}>
           ({data.params.join(", ")})
         </div>
       )}
-      <Handle type="source" position={Position.Bottom} className="!bg-blue-400" />
+      <Handle type="source" position={Position.Bottom} style={{ background: "#3b82f6", border: "none" }} />
     </div>
   );
 });

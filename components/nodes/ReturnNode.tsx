@@ -7,16 +7,24 @@ import type { CodeNode } from "@/types/flow.types";
 export const ReturnNode = memo(function ReturnNode({ data, selected }: NodeProps<CodeNode>) {
   return (
     <div
-      className={`px-4 py-2 rounded-lg border-2 bg-emerald-50 min-w-[140px] max-w-[220px] shadow-sm cursor-pointer transition-shadow ${
-        selected ? "border-emerald-600 shadow-emerald-300 shadow-md" : "border-emerald-400"
-      }`}
+      style={{
+        background: selected ? "rgba(16,185,129,0.15)" : "rgba(16,185,129,0.07)",
+        border: `1px solid ${selected ? "rgba(16,185,129,0.6)" : "rgba(16,185,129,0.3)"}`,
+        borderRadius: "8px",
+        padding: "8px 12px",
+        minWidth: "130px",
+        maxWidth: "220px",
+        cursor: "pointer",
+      }}
     >
-      <Handle type="target" position={Position.Top} className="!bg-emerald-400" />
-      <div className="flex items-center gap-2">
-        <span className="text-emerald-600 font-mono text-xs shrink-0">↩</span>
-        <span className="font-semibold text-sm text-gray-800 truncate">{data.label}</span>
+      <Handle type="target" position={Position.Top} style={{ background: "#10b981", border: "none" }} />
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <span style={{ color: "#34d399", fontFamily: "var(--font-mono)", fontSize: "11px", flexShrink: 0 }}>↩</span>
+        <span style={{ fontWeight: 600, fontSize: "13px", color: "#e2e8f0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {data.label}
+        </span>
       </div>
-      <Handle type="source" position={Position.Bottom} className="!bg-emerald-400" />
+      <Handle type="source" position={Position.Bottom} style={{ background: "#10b981", border: "none" }} />
     </div>
   );
 });

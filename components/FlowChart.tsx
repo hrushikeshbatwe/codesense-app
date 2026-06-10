@@ -108,11 +108,12 @@ function FlowChartInner({
       minZoom={0.1}
       maxZoom={2}
     >
-      <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="#e5e7eb" />
+      <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#2a2a2a" />
       <Controls />
       <MiniMap
-        nodeColor={(node) => NODE_COLOR[(node as CodeNode).data?.kind as NodeKind] ?? "#e5e7eb"}
-        maskColor="rgba(255,255,255,0.7)"
+        nodeColor={(node) => NODE_COLOR[(node as CodeNode).data?.kind as NodeKind] ?? "#333"}
+        maskColor="rgba(12,12,12,0.7)"
+        style={{ background: "#141414" }}
       />
     </ReactFlow>
   );

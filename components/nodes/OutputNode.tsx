@@ -7,20 +7,37 @@ import type { CodeNode } from "@/types/flow.types";
 export const OutputNode = memo(function OutputNode({ data, selected }: NodeProps<CodeNode>) {
   return (
     <div
-      className={`relative px-4 py-2 rounded-lg border-2 bg-orange-50 min-w-[160px] max-w-[320px] shadow-sm cursor-pointer transition-shadow ${
-        selected ? "border-orange-500 shadow-orange-300 shadow-md" : "border-orange-300"
-      }`}
+      style={{
+        background: selected ? "rgba(249,115,22,0.15)" : "rgba(249,115,22,0.07)",
+        border: `1px solid ${selected ? "rgba(249,115,22,0.6)" : "rgba(249,115,22,0.3)"}`,
+        borderRadius: "8px",
+        padding: "8px 12px",
+        minWidth: "150px",
+        maxWidth: "300px",
+        cursor: "pointer",
+        position: "relative",
+      }}
     >
-      <div className="absolute -top-2.5 -right-2.5 bg-orange-100 text-orange-700 text-[10px] font-bold px-1.5 py-0.5 rounded-md shadow-sm border border-orange-300">
+      <div
+        style={{
+          position: "absolute", top: "-9px", right: "-6px",
+          background: "#3d1a00", color: "#fb923c",
+          fontSize: "9px", fontWeight: 700, fontFamily: "var(--font-mono)",
+          padding: "1px 5px", borderRadius: "4px",
+          border: "1px solid rgba(249,115,22,0.3)",
+        }}
+      >
         L{data.lineStart}
       </div>
-      <Handle type="target" position={Position.Top} className="!bg-orange-400" />
-      <div className="flex items-center gap-2">
-        <span className="text-orange-500 text-base shrink-0">🖨️</span>
-        <span className="font-semibold text-sm text-gray-800 break-all">{data.label}</span>
+      <Handle type="target" position={Position.Top} style={{ background: "#f97316", border: "none" }} />
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <span style={{ color: "#fb923c", fontFamily: "var(--font-mono)", fontSize: "11px", flexShrink: 0 }}>out</span>
+        <span style={{ fontWeight: 600, fontSize: "13px", color: "#e2e8f0", wordBreak: "break-all" }}>
+          {data.label}
+        </span>
       </div>
-      <div className="text-xs text-orange-400 mt-0.5 font-mono">Output</div>
-      <Handle type="source" position={Position.Bottom} className="!bg-orange-400" />
+      <div style={{ fontSize: "10px", color: "#fb923c", marginTop: "2px", fontFamily: "var(--font-mono)" }}>Output</div>
+      <Handle type="source" position={Position.Bottom} style={{ background: "#f97316", border: "none" }} />
     </div>
   );
 });

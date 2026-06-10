@@ -40,6 +40,50 @@ body {
   width: 3px !important;
 }
 
+/* React Flow dark theme overrides */
+.react-flow__controls {
+  background: var(--surface-raised) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  overflow: hidden;
+}
+.react-flow__controls-button {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid var(--border) !important;
+  color: var(--muted) !important;
+  fill: var(--muted) !important;
+  width: 28px !important;
+  height: 28px !important;
+}
+.react-flow__controls-button:last-child {
+  border-bottom: none !important;
+}
+.react-flow__controls-button:hover {
+  background: var(--accent-dim) !important;
+  color: var(--accent) !important;
+  fill: var(--accent) !important;
+}
+.react-flow__controls-button svg {
+  fill: inherit !important;
+  max-width: 12px !important;
+}
+.react-flow__minimap {
+  background: var(--surface-raised) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+}
+.react-flow__edge-path {
+  stroke: #444 !important;
+}
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--accent) !important;
+}
+.react-flow__background {
+  background: var(--surface) !important;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

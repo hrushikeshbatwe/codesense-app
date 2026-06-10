@@ -7,20 +7,36 @@ import type { CodeNode } from "@/types/flow.types";
 export const LoopNode = memo(function LoopNode({ data, selected }: NodeProps<CodeNode>) {
   return (
     <div
-      className={`relative px-4 py-2 rounded-lg border-2 bg-green-50 min-w-[160px] max-w-[320px] shadow-sm cursor-pointer transition-shadow ${
-        selected ? "border-green-600 shadow-green-300 shadow-md" : "border-green-400"
-      }`}
+      style={{
+        background: selected ? "rgba(34,197,94,0.15)" : "rgba(34,197,94,0.07)",
+        border: `1px solid ${selected ? "rgba(34,197,94,0.6)" : "rgba(34,197,94,0.3)"}`,
+        borderRadius: "8px",
+        padding: "8px 12px",
+        minWidth: "150px",
+        maxWidth: "300px",
+        cursor: "pointer",
+        position: "relative",
+      }}
     >
-      <div className="absolute -top-2.5 -right-2.5 bg-green-100 text-green-700 text-[10px] font-bold px-1.5 py-0.5 rounded-md shadow-sm border border-green-300">
+      <div
+        style={{
+          position: "absolute", top: "-9px", right: "-6px",
+          background: "#052e16", color: "#4ade80",
+          fontSize: "9px", fontWeight: 700, fontFamily: "var(--font-mono)",
+          padding: "1px 5px", borderRadius: "4px",
+          border: "1px solid rgba(34,197,94,0.3)",
+        }}
+      >
         L{data.lineStart}
       </div>
-      <Handle type="target" position={Position.Top} className="!bg-green-400" />
-      <div className="flex items-center gap-2">
-        <span className="text-green-600 text-base shrink-0">🔁</span>
-        <span className="font-semibold text-sm text-gray-800 break-all">{data.label}</span>
+      <Handle type="target" position={Position.Top} style={{ background: "#22c55e", border: "none" }} />
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <span style={{ color: "#4ade80", fontFamily: "var(--font-mono)", fontSize: "11px", flexShrink: 0 }}>loop</span>
+        <span style={{ fontWeight: 600, fontSize: "13px", color: "#e2e8f0", wordBreak: "break-all" }}>
+          {data.label}
+        </span>
       </div>
-      <div className="text-xs text-green-500 mt-0.5 font-mono">loop</div>
-      <Handle type="source" position={Position.Bottom} className="!bg-green-400" />
+      <Handle type="source" position={Position.Bottom} style={{ background: "#22c55e", border: "none" }} />
     </div>
   );
 });
