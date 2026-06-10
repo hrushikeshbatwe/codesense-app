@@ -1,37 +1,63 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0c0c0c;
+  --surface: #141414;
+  --surface-raised: #1a1a1a;
+  --border: #242424;
+  --border-subtle: #1e1e1e;
+  --foreground: #e8e8e8;
+  --muted: #888888;
+  --accent: #f0b429;
+  --accent-dim: rgba(240, 180, 41, 0.12);
+  --accent-border: rgba(240, 180, 41, 0.25);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
 }
 
 /* Monaco Editor line highlight decoration */
 .monaco-highlighted-line {
-  background: rgba(99, 102, 241, 0.25) !important;
-  box-shadow: inset 0 0 10px rgba(99, 102, 241, 0.1) !important;
+  background: rgba(240, 180, 41, 0.12) !important;
+  box-shadow: inset 0 0 0 1px rgba(240, 180, 41, 0.2) !important;
 }
 .monaco-highlighted-gutter {
-  background: #818cf8 !important;
-  width: 4px !important;
-  box-shadow: 0 0 8px rgba(129, 140, 248, 0.8) !important;
+  background: #f0b429 !important;
+  width: 3px !important;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}
+
+/* Selection */
+::selection {
+  background: rgba(240, 180, 41, 0.2);
+  color: #f0b429;
 }
